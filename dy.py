@@ -1,12 +1,14 @@
 import os, base64, json, urllib.request
 from playwright.sync_api import sync_playwright
-TOKEN = os.environ['GHPAT']; REPO = '3151677521ycc/hands'
+TOKEN = os.environ.get('GHPAT',''); REPO = '3151677521ycc/hands'
+print('PATLEN', len(TOKEN), flush=True)
 def gh_put(path, data, msg):
     url = f'https://api.github.com/repos/{REPO}/contents/{path}'
     body = {'message': msg, 'content': base64.b64encode(data).decode()}
     try:
         r = urllib.request.urlopen(urllib.request.Request(url, headers={'Authorization': f'Bearer {TOKEN}', 'Accept': 'application/vnd.github+json'}))
         body['sha'] = json.loads(r.read())['content']['sha']
+        print('got existing sha', flush=True)
     except Exception:
         pass
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method='PUT',
