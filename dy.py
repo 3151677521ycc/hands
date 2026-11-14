@@ -84,14 +84,14 @@ with sync_playwright() as p:
         cs = ctx.cookies()
         if any(c['name'] in ('sessionid', 'sessionid_ss', 'sid_tt') for c in cs):
             ok = True; print('LOGIN_OK_cookie_at', i * 5, 's', flush=True); break
-        try:
-            has_login = pg.query_selector('button:has-text("登录")') is not None
-            if (not has_login) and (pg.query_selector('text=我的') is not None or pg.query_selector('text=发布视频') is not None):
-                ok = True; print('LOGIN_OK_dom_at', i * 5, 's', flush=True); break
-        except Exception:
-            pass
         pg.wait_for_timeout(5000)
     if ok:
+        try:
+            ctx.storage_state(path='/tmp/state.json')
+            gh_put('state.json', open('/tmp/state.json','rb').read(), 'save session')
+            print('SESSION_SAVED', flush=True)
+        except Exception as e:
+            print('save session fail', type(e).__name__, flush=True)
         pg.goto('https://www.douyin.com/', wait_until='domcontentloaded', timeout=60000)
         pg.wait_for_timeout(3000)
         print('AFTER_URL', pg.url, flush=True)
