@@ -59,7 +59,7 @@ with sync_playwright() as p:
     ok = False
     for i in range(90):
         # 每 45 秒检查二维码是否失效，失效就刷新并重新提交
-        if i > 0 and i % 9 == 0:
+        if False:  # 关掉自动刷新：换码会让用户扫的那张作废
             try:
                 body = pg.inner_text('body')
                 if ('失效' in body) or ('刷新' in body):
