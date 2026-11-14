@@ -55,9 +55,9 @@ with sync_playwright() as p:
     if pw: pw.fill(PWD_)
     pg.wait_for_timeout(800)
     shot(pg,'login_pre.png')
-    for sel in ['button:has-text("登录")','text=登录']:
-        try: pg.click(sel,timeout=4000); print('submit',sel,flush=True); break
-        except Exception: pass
+    # 点弹窗里的「登录」按钮（坐标，避免点到页面右上角那个）
+    pg.mouse.click(819, 585)
+    print('clicked submit by coords', flush=True)
     pg.wait_for_timeout(8000)
     print('URL',pg.url,flush=True)
     t=pg.inner_text('body')
