@@ -27,9 +27,27 @@ with sync_playwright() as p:
             pg.click(sel, timeout=5000); print('clicked', sel, flush=True); break
         except Exception:
             pass
-    pg.wait_for_timeout(5000)
-    shot = pg.screenshot(full_page=False)
-    gh_put('login_qr.png', shot, 'login qr')
+    # 等二维码图片真正加载（data:image 且足够大）
+    qr = None
+    for _ in range(40):
+        for el in pg.query_selector_all('img'):
+            src = (el.get_attribute('src') or '')
+            if src.startswith('data:image'):
+                box = el.bounding_box()
+                if box and box['width'] > 120 and box['height'] > 120:
+                    qr = el
+                    break
+        if qr is not None:
+            break
+        pg.wait_for_timeout(1000)
+    if qr is not None:
+        qr.screenshot(path='/tmp/qr.png')
+        shot = open('/tmp/qr.png', 'rb').read()
+        print('QR_ELEMENT_OK', flush=True)
+    else:
+        pg.wait_for_timeout(3000)
+        shot = pg.screenshot(full_page=False)
+        print('QR_FALLBACK_FULLPAGE', flush=True)
     print('QR_SIZE', len(shot), flush=True)
     ok = False
     for i in range(90):
