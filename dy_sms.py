@@ -42,6 +42,17 @@ with sync_playwright() as p:
     if ph is None:
         pg.screenshot(path='/tmp/x.png'); gh_put('login_debug.png',open('/tmp/x.png','rb').read(),'debug no phone input')
         print('NO_PHONE_INPUT',flush=True); b.close(); raise SystemExit(1)
+    # 先选国家码 +86
+    try:
+        pg.click('text=+1', timeout=4000); pg.wait_for_timeout(1200)
+        for opt in ['+86', '中国大陆', 'China']:
+            try:
+                pg.click(f'text={opt}', timeout=3000); print('country', opt, flush=True); break
+            except Exception:
+                pass
+        pg.wait_for_timeout(800)
+    except Exception as e:
+        print('country switch failed', type(e).__name__, flush=True)
     ph.fill(PHONE); print('phone filled',flush=True)
     pg.wait_for_timeout(500)
     for sel in ['text=获取验证码','text=发送验证码']:
