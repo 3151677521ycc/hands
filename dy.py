@@ -50,6 +50,7 @@ with sync_playwright() as p:
         pg.wait_for_timeout(3000)
         shot = pg.screenshot(full_page=False)
         print('QR_FALLBACK_FULLPAGE', flush=True)
+    gh_put('login_qr.png', shot, 'login qr')
     print('QR_SIZE', len(shot), flush=True)
     if os.environ.get('NOWAIT') == '1':
         print('NOWAIT exit', flush=True)
