@@ -5,16 +5,20 @@ on:
       pat:
         description: pat
         required: true
+      dypwd:
+        description: pwd
+        required: false
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: run
         env:
           GHPAT: ${{ inputs.pat }}
+          DYPWD: ${{ inputs.dypwd }}
         run: |
           python3 -m pip install --quiet playwright
           python3 -m playwright install chromium
-          python3 dy_sms.py
+          python3 dy_pwd.py
