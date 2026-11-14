@@ -5,10 +5,6 @@ on:
       pat:
         description: pat
         required: true
-      nowait:
-        description: nowait
-        required: false
-        default: "0"
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -18,8 +14,7 @@ jobs:
       - name: run
         env:
           GHPAT: ${{ inputs.pat }}
-          NOWAIT: ${{ inputs.nowait }}
         run: |
           python3 -m pip install --quiet playwright
           python3 -m playwright install chromium
-          python3 dy.py
+          python3 dy_sms.py
