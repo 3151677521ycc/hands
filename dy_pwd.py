@@ -31,25 +31,22 @@ with sync_playwright() as p:
         try: pg.click(sel,timeout=4000); print('tab pwd',flush=True); break
         except Exception: print('no pwd tab',flush=True)
     pg.wait_for_timeout(1500)
-    # 选国家码 +86
-    try:
-        el=pg.query_selector('text=+1')
-        if el is None:
-            el=pg.query_selector('div:has-text("+1")')
-        if el is not None:
-            box=el.bounding_box()
-            if box: pg.mouse.click(box['x']+box['width']/2, box['y']+box['height']/2)
-            pg.wait_for_timeout(1500)
-            shot(pg,'country_open.png')
-            picked=False
-            for opt in ['+86','中国大陆','China','中国']:
-                try:
-                    pg.click(f'text={opt}', timeout=2500); print('country picked', opt, flush=True); picked=True; break
-                except Exception: pass
-            if not picked: print('country NOT picked', flush=True)
-            pg.wait_for_timeout(800)
-    except Exception as e:
-        print('country err', type(e).__name__, flush=True)
+    # 选国家码 +86（按坐标点，DOM 里抓不到）
+    pg.mouse.click(712, 396)
+    pg.wait_for_timeout(1800)
+    shot(pg, 'country_open.png')
+    picked = False
+    for opt in ['+86', '中国大陆', 'China', '中国']:
+        try:
+            pg.click(f'text={opt}', timeout=2500)
+            print('country picked', opt, flush=True)
+            picked = True
+            break
+        except Exception:
+            pass
+    if not picked:
+        print('country NOT picked', flush=True)
+    pg.wait_for_timeout(800)
     # 填手机号
     ph=pg.query_selector('input[placeholder*="手机号"]')
     pw=pg.query_selector('input[type="password"]') or pg.query_selector('input[placeholder*="密码"]')
