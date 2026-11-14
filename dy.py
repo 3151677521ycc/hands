@@ -60,7 +60,12 @@ with sync_playwright() as p:
     for i in range(90):
         cs = ctx.cookies()
         if any(c['name'] in ('sessionid', 'sessionid_ss', 'sid_tt') for c in cs):
-            ok = True; print('LOGIN_OK_at', i * 5, 's', flush=True); break
+            ok = True; print('LOGIN_OK_cookie_at', i * 5, 's', flush=True); break
+        try:
+            if pg.query_selector('button:has-text("登录")') is None and pg.query_selector('text=登录') is None:
+                ok = True; print('LOGIN_OK_dom_at', i * 5, 's', flush=True); break
+        except Exception:
+            pass
         pg.wait_for_timeout(5000)
     if ok:
         pg.goto('https://www.douyin.com/', wait_until='domcontentloaded', timeout=60000)
