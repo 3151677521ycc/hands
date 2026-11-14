@@ -17,4 +17,5 @@ jobs:
         run: |
           python3 -m pip install --quiet playwright
           python3 -m playwright install chromium
-          python3 dy.py
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb
+          xvfb-run -a python3 dy.py
