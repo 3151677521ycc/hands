@@ -1,6 +1,6 @@
 import os, base64, json, urllib.request
 from playwright.sync_api import sync_playwright
-TOKEN = os.environ['GH_TOKEN']; REPO = '3151677521ycc/hands'
+TOKEN = os.environ['GHPAT']; REPO = '3151677521ycc/hands'
 def gh_put(path, data, msg):
     url = f'https://api.github.com/repos/{REPO}/contents/{path}'
     body = {'message': msg, 'content': base64.b64encode(data).decode()}
