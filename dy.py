@@ -73,11 +73,20 @@ with sync_playwright() as p:
                     gh_put('login_qr.png', shot2, 'login qr refresh')
             except Exception as e:
                 print('refresh err', type(e).__name__, flush=True)
+        # 每 15 秒重载一次，确保页面反映最新登录态
+        if i > 0 and i % 3 == 0:
+            try:
+                pg.reload(wait_until='domcontentloaded', timeout=30000)
+                pg.wait_for_timeout(2000)
+                print('reloaded at', i*5, flush=True)
+            except Exception as e:
+                print('reload err', type(e).__name__, flush=True)
         cs = ctx.cookies()
         if any(c['name'] in ('sessionid', 'sessionid_ss', 'sid_tt') for c in cs):
             ok = True; print('LOGIN_OK_cookie_at', i * 5, 's', flush=True); break
         try:
-            if pg.query_selector('button:has-text("登录")') is None and pg.query_selector('text=登录') is None:
+            has_login = pg.query_selector('button:has-text("登录")') is not None
+            if (not has_login) and (pg.query_selector('text=我的') is not None or pg.query_selector('text=发布视频') is not None):
                 ok = True; print('LOGIN_OK_dom_at', i * 5, 's', flush=True); break
         except Exception:
             pass
