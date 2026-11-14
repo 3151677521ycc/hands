@@ -58,6 +58,21 @@ with sync_playwright() as p:
         raise SystemExit(0)
     ok = False
     for i in range(90):
+        # 每 45 秒检查二维码是否失效，失效就刷新并重新提交
+        if i > 0 and i % 9 == 0:
+            try:
+                body = pg.inner_text('body')
+                if ('失效' in body) or ('刷新' in body):
+                    for sel in ['text=刷新', 'text=点击刷新', 'text=刷新二维码']:
+                        try:
+                            pg.click(sel, timeout=2500); print('refreshed qr', flush=True); break
+                        except Exception:
+                            pass
+                    pg.wait_for_timeout(3000)
+                    shot2 = pg.screenshot(full_page=False)
+                    gh_put('login_qr.png', shot2, 'login qr refresh')
+            except Exception as e:
+                print('refresh err', type(e).__name__, flush=True)
         cs = ctx.cookies()
         if any(c['name'] in ('sessionid', 'sessionid_ss', 'sid_tt') for c in cs):
             ok = True; print('LOGIN_OK_cookie_at', i * 5, 's', flush=True); break
