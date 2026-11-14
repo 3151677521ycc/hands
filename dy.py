@@ -51,6 +51,10 @@ with sync_playwright() as p:
         shot = pg.screenshot(full_page=False)
         print('QR_FALLBACK_FULLPAGE', flush=True)
     print('QR_SIZE', len(shot), flush=True)
+    if os.environ.get('NOWAIT') == '1':
+        print('NOWAIT exit', flush=True)
+        b.close()
+        raise SystemExit(0)
     ok = False
     for i in range(90):
         cs = ctx.cookies()
